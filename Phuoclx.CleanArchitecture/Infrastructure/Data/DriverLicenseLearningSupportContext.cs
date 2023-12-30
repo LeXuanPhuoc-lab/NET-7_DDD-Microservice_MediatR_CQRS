@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using Application.Common.Interfaces;
 using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 
 namespace Infrastructure.Data;
 
-public partial class DriverLicenseLearningSupportContext : DbContext, IDriverLicenseLearningSupportContext
+public partial class DriverLicenseLearningSupportContext : APIContext, IDriverLicenseLearningSupportContext
 {
-    public DriverLicenseLearningSupportContext()
-    {
-    }
-
     public DriverLicenseLearningSupportContext(DbContextOptions<DriverLicenseLearningSupportContext> options)
         : base(options)
     {
@@ -985,7 +984,13 @@ public partial class DriverLicenseLearningSupportContext : DbContext, IDriverLic
         });
 
         OnModelCreatingPartial(modelBuilder);
+        base.OnModelCreating(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+    public Task<int> SaveChangeAsync(CancellationToken cancellationToken)
+    {
+        return base.SaveChangesAsync(cancellationToken);
+    }
 }

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.DTOs;
+using Application.Common.Interfaces;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 

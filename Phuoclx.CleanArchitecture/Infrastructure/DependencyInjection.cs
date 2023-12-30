@@ -3,11 +3,6 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure
 {
@@ -18,12 +13,11 @@ namespace Infrastructure
         {
             var connectionString = configuration.GetConnectionString("DefaultDB");
 
-            services.AddDbContext<DriverLicenseLearningSupportContext>((sp, options) => {
-                options.UseSqlServer(connectionString);
-            });
-
-            services.AddScoped<IDriverLicenseLearningSupportContext>(provider => 
+            services.AddDbContext<APIContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<DriverLicenseLearningSupportContext>(options => options.UseSqlServer(connectionString));
+            services.AddScoped<IDriverLicenseLearningSupportContext>(provider =>
                 provider.GetRequiredService<DriverLicenseLearningSupportContext>());
+            services.AddScoped<ApplicationDbContextInitialiser>();
 
             return services;
         }

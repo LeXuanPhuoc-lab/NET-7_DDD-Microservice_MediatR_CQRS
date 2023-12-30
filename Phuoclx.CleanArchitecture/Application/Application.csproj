@@ -11,13 +11,18 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Accounts\Commands\" />
+    <PackageReference Include="AutoMapper" Version="11.0.0" />
+    <PackageReference Include="FluentValidation" Version="11.0.0" />
+    <PackageReference Include="LanguageExt.Core" Version="4.1.1" />
+    <PackageReference Include="MediatR" Version="11.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.12" />
+	<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.12" />
+	<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.12" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="11.0.0" />
-    <PackageReference Include="MediatR" Version="11.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.14" />
+    <Folder Include="Payloads\Requests\" />
   </ItemGroup>
 
 </Project>

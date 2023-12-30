@@ -1,4 +1,4 @@
-﻿using Application.Accounts.Queries;
+﻿using Application.Common.DTOs;
 using AutoMapper;
 using Domain.Entities;
 
@@ -9,6 +9,7 @@ namespace Application.Common.Mappings
         public MappingExtensions()
         {
             CreateMap<Account, AccountDto>().ReverseMap();
+            CreateMap<Role, RoleDto>().ReverseMap();    
         }
     }
 }
