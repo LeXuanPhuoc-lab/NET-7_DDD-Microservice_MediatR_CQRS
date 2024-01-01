@@ -1,4 +1,7 @@
-﻿namespace Application.Accounts.Commands
+﻿using Infrastructure.Repository;
+using System.Reflection.Metadata.Ecma335;
+
+namespace Application.Accounts.Commands
 {
     public record SignUpCommand : IRequest<Result<ApplicationUser>> 
     {
@@ -26,11 +29,11 @@
 
     public class SignUpCommandHandler : IRequestHandler<SignUpCommand, Result<ApplicationUser>>
     {
-        private readonly IIdentityService _identityService;
+        private readonly IIdentityRepository _identityRepo;
 
-        public SignUpCommandHandler(IIdentityService identityService)
+        public SignUpCommandHandler(IIdentityRepository identityRepo)
         {
-            _identityService = identityService;
+            _identityRepo = identityRepo;
         }
 
         public async Task<Result<ApplicationUser>> Handle(SignUpCommand request, CancellationToken cancellationToken)
@@ -38,25 +41,20 @@
             // convert SignUpRequest to ApplicationUser
             var user = request.ToApplicationUser();
 
-            // validation
-            var validator = new SignUpCommandValidtor();
-            var validationResult = await validator.ValidateAsync(request);
-            if(!validationResult.IsValid)
-            {
-                // cause validation exception
-                ValidationException exception = new (validationResult.Errors);
-                return new Result<ApplicationUser>(exception);
-            }
+            //// validation
+            //var validator = new SignUpCommandValidtor();
+            //var validationResult = await validator.ValidateAsync(request);
+            //if (!validationResult.IsValid)
+            //{
+            //    // cause validation exception
+            //    ValidationException exception = new(validationResult.Errors);
+            //    return new Result<ApplicationUser>(exception);
+            //}
 
-            var result = await _identityService.CreateAsync(user, 
+            // default sign up role is nameof(Member)
+            return await _identityRepo.CreateAsync(user,
                 request.Password,
                 Roles.Member);
-
-            if(result is not null)
-                return user;
-            
-
-            return null!;   
         }
     }
 }

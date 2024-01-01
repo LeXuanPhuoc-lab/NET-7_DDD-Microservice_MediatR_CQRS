@@ -8,7 +8,8 @@
                 .NotEmpty()
                 .EmailAddress();
             RuleFor(x => x.IdentityCardNumber)
-                .MaximumLength(12);
+                .Length(12);
+                //.WithMessage("Identity card maximum length is 12");
             //RuleFor(x => x.SignUpRequest.Password)
             //    .Matches(@"")
             //    .WithMessage("");

@@ -7,20 +7,26 @@ namespace API.Identity
     public class RequiresCalimAttribute : Attribute, IAuthorizationFilter
     {
         private readonly string _claimName;
-        private readonly string _claimValue;
+        private readonly string[] _claimValues;
 
-        public RequiresCalimAttribute(string claimName, string claimValue)
+        public RequiresCalimAttribute(string claimName, params string[] claimValues)
         {
             _claimName = claimName;
-            _claimValue = claimValue;
+            _claimValues = claimValues;
         }
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            if(!context.HttpContext.User.HasClaim(_claimName, _claimValue))
+            bool isAuthorize = false;
+            foreach(var claim in _claimValues)
             {
-                context.Result = new ForbidResult();
+                if (context.HttpContext.User.HasClaim(_claimName, claim))
+                {
+                    isAuthorize = true;
+                }
             }
+
+            if(!isAuthorize) context.Result = new ForbidResult();
         }
     }
 }

@@ -79,18 +79,18 @@ public partial class DriverLicenseLearningSupportContext : APIContext, IDriverLi
 
     public virtual DbSet<WeekdaySchedule> WeekdaySchedules { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(GetConnectionString());
+    //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    //    => optionsBuilder.UseSqlServer(GetConnectionString());
 
-    private string GetConnectionString()
-    {
-        IConfiguration config = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .Build();
+    //private string GetConnectionString()
+    //{
+    //    IConfiguration config = new ConfigurationBuilder()
+    //        .SetBasePath(Directory.GetCurrentDirectory())
+    //        .AddJsonFile("appsettings.json")
+    //        .Build();
 
-        return config["ConnectionStrings:DefaultDB"];
-    }
+    //    return config["ConnectionStrings:DefaultDB"];
+    //}
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -2,11 +2,12 @@
 global using AutoMapper;
 global using API.Identity;
 global using Application;
-global using Application.Common.Mappings;
 global using Application.Accounts.Queries;
-global using Application.Common.Models;
 global using Application.Payloads.Responses;
+global using Application.Common.Models;
 global using Application.Common.Exceptions;
+global using Application.Common.Mappings;
+global using Application.Common.PipelineBehaviours;
 global using Domain.Entities;
 global using Domain.Constants;
 global using Infrastructure;
@@ -22,7 +23,8 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.AspNetCore.Authentication.JwtBearer;
 global using System.Text;
 global using Application.Common.Interfaces;
-global using Infrastructure.Identity;
 global using LanguageExt.Common;
 global using FluentValidation;
+global using Infrastructure.Repository;
+global using System.Reflection;
 

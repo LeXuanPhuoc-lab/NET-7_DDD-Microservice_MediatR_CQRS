@@ -1,3 +1,6 @@
+using Application.Common.Extensions;
+using Infrastructure.Repository.Cached;
+
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration configuration = new ConfigurationBuilder()
@@ -19,7 +22,25 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
-builder.Services.AddMediatR(typeof(MediatREntryPoint).Assembly);
+
+// Add Mediator
+builder.Services.AddMediatR(typeof(MediatREntryPoint));
+// Add IPipelineBehaviour for Mediator
+// AddTranisent Run every time request
+// Register with <,> : For any <TRequest,TResponse>
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+// Register for all validator in an assembly
+builder.Services.AddValidatorsFromAssembly(typeof(ValidatorConfigurer).Assembly);
+
+//builder.Services.AddMediatR(cfg => {
+//    cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+//    //cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+//    //cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
+//    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+//    //cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+//});
+
+
 
 // Add Identity
 //builder.Services.AddIdentity<IdentityUser, IdentityRole>()
@@ -76,10 +97,11 @@ builder.Services.AddAuthorization(options =>
                        Roles.Manager));
 });
 
-builder.Services.AddScoped<IIdentityService, IdentityService>();
-builder.Services.AddScoped<IRoleManagerService, RoleManagerService>();
-
+builder.Services.AddScoped<IIdentityRepository, IdentityRepository>();
+// Scrutor
+builder.Services.Decorate<IIdentityRepository, CachedIdentityRepository>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 
 var app = builder.Build();
 
@@ -93,7 +115,15 @@ if (app.Environment.IsDevelopment())
 // initialise Database
 app.InitialiserDatabaseAsync().Wait();
 
+// Add Middleware exception for to pipeline will catch exception/log/re-excute
+// Add FluentValidation Exception Handler
+app.UseFluentValidationExceptionHandler();
+
+// This only use for handle exception without use LanguageExt.Commond.Result 
+//app.UseFluentValidationExceptionHandler();
+
 app.UseHttpsRedirection();
+
 
 // Add authentication middleware
 app.UseAuthentication();

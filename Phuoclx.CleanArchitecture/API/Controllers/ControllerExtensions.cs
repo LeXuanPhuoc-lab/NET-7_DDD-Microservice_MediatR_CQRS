@@ -1,4 +1,6 @@
-﻿namespace API.Controllers
+﻿using System.Data;
+
+namespace API.Controllers
 {
     public static class ControllerExtensions
     {
@@ -6,13 +8,12 @@
             Func<TResult, TResponse> mapper)
         {
             return result.Match<IActionResult>(obj => {
-                if (obj is null) return new StatusCodeResult(500);
-
                 //// Not cause exception 
+                //var response = mapper(obj);
                 var response = mapper(obj);
-                if (obj!.GetType() == typeof(BaseResponse))
+                if (response!.GetType() == typeof(BaseResponse))
                 {
-                    var res = obj as BaseResponse;
+                    var res = response as BaseResponse;
 
                     switch (res!.StatusCode)
                     {
@@ -28,16 +29,26 @@
                             return new NotFoundObjectResult(res);
                         case StatusCodes.Status201Created:
                             return new CreatedResult("", res);
+                        case StatusCodes.Status500InternalServerError:
+                            return new StatusCodeResult(res.StatusCode);
                     }
                 }
 
                 return new OkObjectResult(response);
             }, exception => {
+                var statusCode = StatusCodes.Status500InternalServerError;
                 // Cause exception 
                 // Catch validation exception
-                if(exception is ValidationException validationException)
+                if (exception is ValidationException validationException)
                     return new BadRequestObjectResult(validationException.ToProblemDetails());
-                return new StatusCodeResult(500);
+                else if (exception is DuplicateNameException)
+                    statusCode = StatusCodes.Status400BadRequest;
+
+                return new ObjectResult(new BaseResponse{
+                    StatusCode = statusCode,
+                    Message = exception.Message,
+                    Data = exception.Data
+                }){ StatusCode = statusCode};
             });
         }
     }

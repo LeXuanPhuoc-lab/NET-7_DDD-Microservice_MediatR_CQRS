@@ -21,10 +21,12 @@ namespace Application.Accounts.Queries
 
         public async Task<AccountDto> Handle(GetAccountQuery request, CancellationToken cancellationToken)
         {
-            var accounts = await _mediator.Send(new GetAccountsQuery());
-            var account = accounts.FirstOrDefault(x =>
-                        x.Email.Equals(request.Email));
-            return account != null ? account : null!;
+            //var accounts = await _mediator.Send(new GetAccountsQuery());
+            //var account = accounts.FirstOrDefault(x =>
+            //            x.Email.Equals(request.Email));
+            //return account != null ? account : null!;
+
+            return null!;
         }
     }
 }
