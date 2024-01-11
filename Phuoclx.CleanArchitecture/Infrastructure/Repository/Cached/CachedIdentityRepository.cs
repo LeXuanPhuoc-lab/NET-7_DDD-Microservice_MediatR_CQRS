@@ -23,10 +23,14 @@ namespace Infrastructure.Repository.Cached
         {
             return await _identityRepository.CreateAsync(user, password, role);
         }
-
         public async Task<ApplicationUser?> GetByEmailAsync(string email)
         {
             return await _identityRepository.GetByEmailAsync(email);
+        }
+
+        public async Task<ApplicationUser?> GetByIdAsync(string userId)
+        {
+            return await _identityRepository.GetByIdAsync(userId);
         }
 
         public async Task<IEnumerable<string>> GetRolesbyUserIdAsync(string userId)
@@ -47,8 +51,7 @@ namespace Infrastructure.Repository.Cached
             var users = await _identityRepository.GetUsersAsync();
             foreach (var user in users)
                 _cache.TryAdd(Guid.Parse(user.Id), user);
-
-            return users;
+            return users; 
         }
     }
 }

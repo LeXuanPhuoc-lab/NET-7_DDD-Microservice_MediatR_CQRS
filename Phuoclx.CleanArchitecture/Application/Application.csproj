@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.0"></PackageReference>
     <PackageReference Include="FluentValidation" Version="11.0.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.0.0" />
     <PackageReference Include="LanguageExt.Core" Version="4.1.1" />
@@ -23,7 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Payloads\Requests\" />
+    <Folder Include="Identities\Commands\DeleteUser\" />
+    <Folder Include="Roles\Commands\" />
   </ItemGroup>
-
+  <!--<ItemGroup>
+	  <Using Include="Bcrypt.Net.Bcrypt" Alias="BC"/>
+  </ItemGroup>-->
 </Project>

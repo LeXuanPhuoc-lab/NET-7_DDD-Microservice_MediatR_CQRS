@@ -1,7 +1,9 @@
 ﻿using Infrastructure.Data;
 using LanguageExt.Common;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.IdentityModel.Tokens;
 using System.Data;
+using System.Threading;
 
 namespace Infrastructure.Repository
 {
@@ -27,8 +29,8 @@ namespace Infrastructure.Repository
                 // get user by email
                 var identityUser = await GetByEmailAsync(user.Email!);
                 // email already exist
-                if (identityUser is not null) return new Result<ApplicationUser>(new
-                    DuplicateNameException("Email already exist"));
+                if (identityUser is not null)
+                    throw new DuplicateNameException("Email already exist");
 
                 // create new user
                 var result = await _userManager.CreateAsync(user, password);
@@ -61,6 +63,11 @@ namespace Infrastructure.Repository
                 // throw;
             }
             return null!;
+        }
+
+        public async Task<ApplicationUser?> GetByIdAsync(string userId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
         }
 
         public async Task<IEnumerable<string>> GetRolesbyUserIdAsync(string userId)
@@ -97,5 +104,6 @@ namespace Infrastructure.Repository
         {
             return await _context.Users.ToListAsync();
         }
+        
     }
 }

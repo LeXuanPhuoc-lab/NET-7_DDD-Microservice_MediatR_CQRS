@@ -1,9 +1,9 @@
 ﻿using Infrastructure.Repository;
 using System.Reflection.Metadata.Ecma335;
 
-namespace Application.Accounts.Commands
+namespace Application.Identity.Commands.SignUp
 {
-    public record SignUpCommand : IRequest<Result<ApplicationUser>> 
+    public record SignUpCommand : IRequest<Result<ApplicationUser>>
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
@@ -54,7 +54,7 @@ namespace Application.Accounts.Commands
             // default sign up role is nameof(Member)
             return await _identityRepo.CreateAsync(user,
                 request.Password,
-                Roles.Member);
+                UserRoles.Member);
         }
     }
 }

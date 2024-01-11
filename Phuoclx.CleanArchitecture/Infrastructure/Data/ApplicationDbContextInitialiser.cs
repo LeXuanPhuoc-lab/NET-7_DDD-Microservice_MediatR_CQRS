@@ -67,13 +67,13 @@
             try
             {
                 // Default roles
-                IdentityRole administratorRole = new(Roles.Administrator);
+                IdentityRole administratorRole = new(UserRoles.Administrator);
                 List<IdentityRole> roles = new() 
                 {
                     administratorRole,
-                    new (Roles.Manager),
-                    new (Roles.Mentor),
-                    new (Roles.Member)
+                    new (UserRoles.Manager),
+                    new (UserRoles.Mentor),
+                    new (UserRoles.Member)
                 };
                 foreach(IdentityRole role in roles)
                 {

@@ -25,6 +25,9 @@ public class APIContext : IdentityDbContext<ApplicationUser>
 {
     protected APIContext(DbContextOptions options) : base(options){ }
 
+    // Entity extension 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public APIContext(DbContextOptions<APIContext> options)
         : base(options)
     {

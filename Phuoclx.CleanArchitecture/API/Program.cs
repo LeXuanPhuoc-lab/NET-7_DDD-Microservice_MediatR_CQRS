@@ -1,6 +1,3 @@
-using Application.Common.Extensions;
-using Infrastructure.Repository.Cached;
-
 var builder = WebApplication.CreateBuilder(args);
 
 IConfiguration configuration = new ConfigurationBuilder()
@@ -14,7 +11,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(option => {
     })
     .AddEntityFrameworkStores<APIContext>()
     .AddDefaultTokenProviders();
-
+// Add Customer Password Hasher 
+builder.Services.AddTransient<IPasswordHasher<ApplicationUser>, CustomPasswordHasher>();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -32,8 +30,11 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 // Register for all validator in an assembly
 builder.Services.AddValidatorsFromAssembly(typeof(ValidatorConfigurer).Assembly);
 
-//builder.Services.AddMediatR(cfg => {
-//    cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+
+
+//builder.Services.AddMediatR(cfg =>
+//{
+//    //cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
 //    //cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
 //    //cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
 //    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
@@ -62,27 +63,31 @@ builder.Services.AddSingleton(mapperConfig.CreateMapper());
 // Configure AppSettings
 builder.Services.Configure<AppSettings>(configuration.GetSection("AppSettings"));
 
+// Token Validation Parameters
+var tokenValidationParameters = new TokenValidationParameters 
+{
+    IssuerSigningKey = new SymmetricSecurityKey(
+        Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Key"]!)),
+
+    ValidateIssuer = false,
+    ValidateAudience = false,
+    // Sign in token
+    ValidateIssuerSigningKey = true,
+    RequireExpirationTime = false,
+    ValidateLifetime = false 
+};
+
+// Add Token Validation Params to DI Container
+builder.Services.AddSingleton(tokenValidationParameters);
+
 // Add Authentication
 builder.Services.AddAuthentication(x => {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(opt => {
-    opt.TokenValidationParameters = new()
-    {
-        //ValidIssuer = configuration["AppSettings:Issuer"],
-        //ValidAudience = configuration["AppSettings:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey
-            (Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Key"]!)),
-
-        // auto provide token 
-        ValidateIssuer = false,
-        ValidateAudience = false,
-        //ValidateLifetime = true,
-        // sign in token 
-        ValidateIssuerSigningKey = true,
-        ClockSkew = TimeSpan.Zero
-    };
+    opt.TokenValidationParameters = tokenValidationParameters;
+    opt.SaveToken = true;
 });
 
 // Add Authorization
@@ -91,15 +96,13 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(IdentityData.AdminUserPolicyName, p =>
         p.RequireClaim(IdentityData.AdminUserClaimName,
-                       Roles.Administrator));
+                       UserRoles.Administrator));
     options.AddPolicy(IdentityData.ManagerUserPolicyName, m =>
-        m.RequireClaim(IdentityData.ManagerUserClaimName, 
-                       Roles.Manager));
+        m.RequireClaim(IdentityData.ManagerUserClaimName,
+                       UserRoles.Manager));
 });
 
-builder.Services.AddScoped<IIdentityRepository, IdentityRepository>();
-// Scrutor
-builder.Services.Decorate<IIdentityRepository, CachedIdentityRepository>();
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 

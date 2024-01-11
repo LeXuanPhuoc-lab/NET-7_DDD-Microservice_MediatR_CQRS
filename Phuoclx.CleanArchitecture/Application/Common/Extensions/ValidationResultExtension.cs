@@ -1,10 +1,8 @@
-﻿using LanguageExt.Common;
-
-namespace Application.Common.Extensions
+﻿namespace Application.Common.Extensions
 {
     public static class ValidationResultExtension
     {
-        public static ValidationProblemDetails ToProblemDetails(this ValidationResult result) 
+        public static ValidationProblemDetails ToProblemDetails(this FluentValidation.ValidationException result) 
         {
             ValidationProblemDetails validationProblemDetail = new() 
             {
@@ -13,7 +11,7 @@ namespace Application.Common.Extensions
 
             // each error in ValidationResult.Errors is ValidationFailure
             // -> contain pair key, value (Property, ErrorMessage)
-            foreach (ValidationFailure failure in result.Errors) 
+            foreach (FluentValidation.Results.ValidationFailure failure in result.Errors) 
             {
                 // if error property is already exist
                 if (validationProblemDetail.Errors.ContainsKey(failure.PropertyName))
@@ -32,7 +30,7 @@ namespace Application.Common.Extensions
 
             return validationProblemDetail;
         }
-        public static ValidationProblemDetails ToProblemDetails(this IEnumerable<ValidationFailure> errors)
+        public static ValidationProblemDetails ToProblemDetails(this IEnumerable<FluentValidation.Results.ValidationFailure> errors)
         {
             ValidationProblemDetails validationProblemDetail = new()
             {
@@ -41,7 +39,7 @@ namespace Application.Common.Extensions
 
             // each error in ValidationResult.Errors is ValidationFailure
             // -> contain pair key, value (Property, ErrorMessage)
-            foreach (ValidationFailure failure in errors)
+            foreach (FluentValidation.Results.ValidationFailure failure in errors)
             {
                 // if error property is already exist
                 if (validationProblemDetail.Errors.ContainsKey(failure.PropertyName))

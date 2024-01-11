@@ -1,5 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Repository.Cached;
+using Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,15 @@ namespace Infrastructure
             services.AddScoped<IDriverLicenseLearningSupportContext>(provider =>
                 provider.GetRequiredService<DriverLicenseLearningSupportContext>());
             services.AddScoped<ApplicationDbContextInitialiser>();
+
+
+            // Add Repository
+            services.AddScoped<IIdentityRepository, IdentityRepository>();
+            services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+
+            // Scrutor
+            services.Decorate<IIdentityRepository, CachedIdentityRepository>();
+
 
             return services;
         }

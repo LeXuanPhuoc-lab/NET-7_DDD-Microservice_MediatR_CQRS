@@ -1,13 +1,4 @@
-﻿using API.Controllers;
-using Application.Accounts.Commands;
-using Application.Common.Exceptions;
-using Azure;
-using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Application.Controllers
+﻿namespace Application.Controllers
 {
     [ApiController]
     public class AccountController : ControllerBase
@@ -40,30 +31,30 @@ namespace Application.Controllers
         //    return result.ToOk(async u => await _mediator.Send(new SignInQuery(u.UserName!, request.Password)));
         //}
 
-        [Authorize(Roles = Roles.Administrator)]
-        [HttpGet("accounts")]
-        public async Task<IActionResult> GetAccounts() 
-        {
-            return Ok(await _mediator.Send(new GetAccountsQuery()));
-        }
+        //[Authorize(Roles = Roles.Administrator)]
+        //[HttpGet("accounts")]
+        //public async Task<IActionResult> GetAccounts() 
+        //{
+        //    return Ok(await _mediator.Send(new GetAccountsQuery()));
+        //}
 
-        [HttpGet("accounts/{email}")]
-        public async Task<IActionResult> GetAccountByEmail([FromRoute] string email) 
-        {
-            return Ok(await _mediator.Send(new GetAccountQuery(email)));
-        }
+        //[HttpGet("accounts/{email}")]
+        //public async Task<IActionResult> GetAccountByEmail([FromRoute] string email) 
+        //{
+        //    return Ok(await _mediator.Send(new GetAccountQuery(email)));
+        //}
 
 
-        [HttpPost("accounts")]
-        public async Task<IActionResult> CreateAccount([FromBody] CreateAccountCommand request) 
-        {
-            return Ok(await _mediator.Send(request));
-        }
+        //[HttpPost("accounts")]
+        //public async Task<IActionResult> CreateAccount([FromBody] CreateAccountCommand request) 
+        //{
+        //    return Ok(await _mediator.Send(request));
+        //}
 
-        [HttpPut("accounts")]
-        public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountCommand request) 
-        {
-            return Ok(await _mediator.Send(request));
-        }
+        //[HttpPut("accounts")]
+        //public async Task<IActionResult> UpdateAccount([FromBody] UpdateAccountCommand request) 
+        //{
+        //    return Ok(await _mediator.Send(request));
+        //}
     }
 }

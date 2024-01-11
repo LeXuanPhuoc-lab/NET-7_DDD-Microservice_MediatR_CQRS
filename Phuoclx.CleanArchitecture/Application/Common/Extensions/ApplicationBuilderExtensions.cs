@@ -1,13 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-
-namespace Application.Common.Extensions
+﻿namespace Application.Common.Extensions
 {
     public static class ApplicationBuilderExtensions
     {
@@ -18,7 +9,7 @@ namespace Application.Common.Extensions
                     var errorFeatures = context.Features.Get<IExceptionHandlerFeature>();
                     var exception = errorFeatures?.Error;
 
-                    if (!(exception is ValidationException validationException))
+                    if (!(exception is FluentValidation.ValidationException validationException))
                         throw exception!;
 
                     //var errors = validationException.Errors.Select(err => new {

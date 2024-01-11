@@ -9,11 +9,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Accounts.Commands
+namespace Application.Identity.Commands.UpdateUser
 {
     public record UpdateAccountCommand(string Email, string Password) : IRequest<AccountDto>;
 
-    public class UpdateAccountCommandHandler 
+    public class UpdateAccountCommandHandler
         : IRequestHandler<UpdateAccountCommand, AccountDto>
     {
         private readonly IDriverLicenseLearningSupportContext _context;
@@ -35,7 +35,7 @@ namespace Application.Accounts.Commands
             account.Password = request.Password;
             // save changes
             await _context.SaveChangeAsync(cancellationToken);
-            
+
             return _mapper.Map<Account, AccountDto>(account);
         }
     }

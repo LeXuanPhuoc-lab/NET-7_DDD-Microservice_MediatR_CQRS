@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Constants
 {
-    public abstract class Roles 
+    public abstract class UserRoles 
     {
         public const string Administrator = nameof(Administrator);
         public const string Manager = nameof(Manager);

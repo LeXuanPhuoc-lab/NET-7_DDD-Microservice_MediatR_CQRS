@@ -1,13 +1,9 @@
-﻿using Application.Accounts.Commands;
-using Application.Common.Extensions;
-using LanguageExt;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿using Application.Identity.Commands.SignUp;
 
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
     public class AuthenticationController : ControllerBase 
     {
         private readonly IMediator _mediator;
@@ -17,26 +13,46 @@ namespace API.Controllers
             _mediator = mediator;
         }
 
-
-        [HttpGet("sign-in")]
+        [HttpGet(APIRoutes.Identity.SignIn)]
         public async Task<IActionResult> SignIn(string username, string password)
         {
             var result = await _mediator.Send(new SignInQuery(username, password));
 
-            if (result.IsFaulted)
-                return result.ToResponse(x => x);
-            else
-                return result.ToResponse(x => {
-                    if (x == null)
-                        return new BaseResponse {
-                            StatusCode = StatusCodes.Status400BadRequest,
-                            Message = "Wrong username or password"
-                        };
-                    return x!.ToSuccessBaseResponse("Sign in successfully");
+            return result.Match<IActionResult>(x => {
+                if (x == null)
+                    return BadRequest(new BaseResponse
+                    {
+                        StatusCode = StatusCodes.Status400BadRequest,
+                        Message = "Wrong username or password"
+                    });
+                return Ok(new AuthSucessResponse { 
+                    Token = x.Token,
+                    RefreshToken = x.RefreshToken
                 });
+            }, exception => {
+                if (exception is ValidationException validationException) 
+                {
+                    return BadRequest(validationException.ToProblemDetails());
+                }
+
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            });
+
+
+            //if (result.IsFaulted)
+            //    return result.ToResponse(x => x);
+            //else
+            //    return result.ToResponse(x => {
+            //        if (x == null)
+            //            return new BaseResponse {
+            //                StatusCode = StatusCodes.Status400BadRequest,
+            //                Message = "Wrong username or password"
+            //            };
+            //        return x!.ToSuccessBaseResponse("Sign in successfully");
+            //    });
         }
 
-        [HttpPost("sign-up")]
+        [HttpPost(APIRoutes.Identity.SignUp)]
         public async Task<IActionResult> SignUp(SignUpCommand request)
         {
            var result = await _mediator.Send(request);
@@ -52,30 +68,31 @@ namespace API.Controllers
                 });
         }
 
-        [HttpGet("accounts")]
-        [Authorize]
-        //[RequiresCalim(IdentityData.RoleClaimName, new[] { Roles.Administrator , Roles.Manager})]
-        public async Task<IActionResult> GetAccounts()
+        [HttpPost(APIRoutes.Identity.Refresh)]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request) 
         {
-            //var result = await _mediator.Send(new GetAccountsQuery());
+            var authResponse = 
+                await _mediator.Send(new CreateRefreshTokenCommand(request.Token, request.RefreshToken));
 
-            //if (result.IsFaulted)
-            //    return result.ToResponse(x => x);
-            //else
-            //    return result.ToResponse(x =>
-            //    {
-            //        if (x == null)
-            //            return new BaseResponse
-            //            {
-            //                StatusCode = StatusCodes.Status404NotFound,
-            //                Message = "Not found any account"
-            //            };
-            //        return x!.ToSuccessBaseResponse();
-            //    });
+            return authResponse.Match<IActionResult>(x =>
+            {
+                if (!x.Success)
+                    return BadRequest(new AuthFailedResponse { 
+                        Errors = x.Errors
+                    });
 
-            var result = await _mediator.Send(new GetAccountsQuery());
+                return Ok(new AuthSucessResponse { 
+                    Token = x.Token,
+                    RefreshToken = x.RefreshToken,  
+                });
+            }, exception => {
+                if(exception is ValidationException validationException)
+                {
+                    return BadRequest(validationException.ToProblemDetails());
+                }
 
-            return Ok(result);
+                return StatusCode(500);
+            });
         }
     }
 }

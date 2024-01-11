@@ -1,6 +1,4 @@
-﻿//using MediatR;
-
-namespace Application.Common.PipelineBehaviours
+﻿namespace Application.Common.PipelineBehaviours
 {
     public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>
@@ -28,7 +26,7 @@ namespace Application.Common.PipelineBehaviours
                                       .Distinct()
                                       .ToList();
             if (failures.Any())
-                throw new ValidationException(failures);
+                throw new FluentValidation.ValidationException(failures);
             return await next(); // logic  
             // post 
         }

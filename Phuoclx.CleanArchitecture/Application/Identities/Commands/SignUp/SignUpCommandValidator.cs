@@ -1,4 +1,4 @@
-﻿namespace Application.Accounts.Commands
+﻿namespace Application.Identity.Commands.SignUp
 {
     public class SignUpCommandValidtor : AbstractValidator<SignUpCommand>
     {
@@ -9,7 +9,7 @@
                 .EmailAddress();
             RuleFor(x => x.IdentityCardNumber)
                 .Length(12);
-                //.WithMessage("Identity card maximum length is 12");
+            //.WithMessage("Identity card maximum length is 12");
             //RuleFor(x => x.SignUpRequest.Password)
             //    .Matches(@"")
             //    .WithMessage("");

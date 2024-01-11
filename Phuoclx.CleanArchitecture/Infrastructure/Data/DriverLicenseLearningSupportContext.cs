@@ -17,6 +17,7 @@ public partial class DriverLicenseLearningSupportContext : APIContext, IDriverLi
     {
     }
 
+    // Entites from EF
     public virtual DbSet<Account> Accounts { get; set; }
 
     public virtual DbSet<Address> Addresses { get; set; }
